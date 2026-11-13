@@ -3325,7 +3325,7 @@
         "nullable": true,
         "properties": {
           "blockAds": {
-            "description": "Block ads in the browser session. Default is false.",
+            "description": "Block ads in the browser session. Default is true.",
             "type": "boolean"
           },
           "caCertificates": {
@@ -5571,7 +5571,9 @@
           },
           "size": {
             "description": "Size of the file in bytes",
-            "type": "number"
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer"
           }
         },
         "required": [
@@ -5773,7 +5775,9 @@
                 },
                 "size": {
                   "description": "Size of the file in bytes",
-                  "type": "number"
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
                 }
               },
               "required": [
