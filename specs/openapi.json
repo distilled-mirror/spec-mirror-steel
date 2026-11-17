@@ -250,6 +250,21 @@
             "additionalProperties": false,
             "description": "Clicks the element with the mouse.",
             "properties": {
+              "button": {
+                "description": "left by default.",
+                "enum": [
+                  "left",
+                  "right",
+                  "middle"
+                ],
+                "type": "string"
+              },
+              "clicks": {
+                "description": "2 makes a double click and 3 a triple click. 1 by default.",
+                "maximum": 3,
+                "minimum": 1,
+                "type": "integer"
+              },
               "command": {
                 "enum": [
                   "click"
@@ -284,46 +299,6 @@
               "target"
             ],
             "title": "ClickCommand",
-            "type": "object"
-          },
-          {
-            "additionalProperties": false,
-            "description": "Double-clicks the element with the mouse.",
-            "properties": {
-              "command": {
-                "enum": [
-                  "dblclick"
-                ],
-                "type": "string"
-              },
-              "expect": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/CommandExpectation"
-                  }
-                ]
-              },
-              "frame": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/CommandFrame"
-                  }
-                ]
-              },
-              "tab": {
-                "description": "A tab id such as t2. A command on a ref does not need it.",
-                "pattern": "^t\\d+$",
-                "type": "string"
-              },
-              "target": {
-                "$ref": "#/components/schemas/CommandTarget"
-              }
-            },
-            "required": [
-              "command",
-              "target"
-            ],
-            "title": "DblclickCommand",
             "type": "object"
           },
           {
@@ -506,7 +481,7 @@
           },
           {
             "additionalProperties": false,
-            "description": "Presses a key, such as Enter, or a combination such as Control+a.",
+            "description": "Presses a key, such as Enter, or a combination such as Control+a. On a tab with an open dialog, Enter without a target accepts the dialog and Escape dismisses it.",
             "properties": {
               "command": {
                 "enum": [
@@ -1537,6 +1512,10 @@
                   }
                 ]
               },
+              "loading": {
+                "description": "The page was still loading when the command returned.",
+                "type": "boolean"
+              },
               "ok": {
                 "type": "boolean"
               },
@@ -1577,6 +1556,10 @@
                     "$ref": "#/components/schemas/CommandErrorInfo"
                   }
                 ]
+              },
+              "loading": {
+                "description": "The page was still loading when the command returned.",
+                "type": "boolean"
               },
               "navigated": {
                 "description": "False when there was no history entry.",
@@ -1623,6 +1606,10 @@
                   }
                 ]
               },
+              "loading": {
+                "description": "The page was still loading when the command returned.",
+                "type": "boolean"
+              },
               "navigated": {
                 "description": "False when there was no history entry.",
                 "type": "boolean"
@@ -1667,6 +1654,10 @@
                     "$ref": "#/components/schemas/CommandErrorInfo"
                   }
                 ]
+              },
+              "loading": {
+                "description": "The page was still loading when the command returned.",
+                "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
@@ -1762,11 +1753,18 @@
                 ]
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
             "required": [
@@ -1775,56 +1773,6 @@
               "effect"
             ],
             "title": "ClickResult",
-            "type": "object"
-          },
-          {
-            "additionalProperties": false,
-            "description": "Result of a dblclick command.",
-            "properties": {
-              "command": {
-                "enum": [
-                  "dblclick"
-                ],
-                "type": "string"
-              },
-              "dialog": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/CommandDialog"
-                  }
-                ],
-                "description": "A dialog that the command opened. It blocks the tab until it closes."
-              },
-              "effect": {
-                "description": "What happened to the page: nothing, a change, or a possible change.",
-                "enum": [
-                  "none",
-                  "applied",
-                  "unknown"
-                ],
-                "type": "string"
-              },
-              "error": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/CommandErrorInfo"
-                  }
-                ]
-              },
-              "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
-                "type": "boolean"
-              },
-              "ok": {
-                "type": "boolean"
-              }
-            },
-            "required": [
-              "command",
-              "ok",
-              "effect"
-            ],
-            "title": "DblclickResult",
             "type": "object"
           },
           {
@@ -1946,11 +1894,18 @@
                 ]
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
             "required": [
@@ -1996,11 +1951,18 @@
                 ]
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
             "required": [
@@ -2046,11 +2008,18 @@
                 ]
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
             "required": [
@@ -2096,11 +2065,18 @@
                 ]
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
             "required": [
@@ -2146,11 +2122,18 @@
                 ]
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
             "required": [
@@ -2196,11 +2179,18 @@
                 ]
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
             "required": [
@@ -2246,11 +2236,18 @@
                 ]
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               },
               "selected": {
                 "description": "The values of the selected options.",
@@ -2306,11 +2303,18 @@
                 ]
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
             "required": [
@@ -2359,11 +2363,18 @@
                 ]
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
             "required": [
@@ -2415,11 +2426,18 @@
                 "type": "array"
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
             "required": [
@@ -2465,11 +2483,18 @@
                 ]
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
             "required": [
@@ -2515,6 +2540,22 @@
               },
               "value": {
                 "description": "A string for text, html, markdown, value, attr, title, and url. A number for count. { x, y, width, height } or null for box. A list of locators for locator."
+              },
+              "what": {
+                "description": "What was read. It tells the type of value.",
+                "enum": [
+                  "text",
+                  "html",
+                  "markdown",
+                  "value",
+                  "attr",
+                  "title",
+                  "url",
+                  "count",
+                  "box",
+                  "locator"
+                ],
+                "type": "string"
               }
             },
             "required": [
@@ -2708,11 +2749,18 @@
                 ]
               },
               "loading": {
-                "description": "The command started a navigation that was still loading when it returned.",
+                "description": "The page was still loading when the command returned.",
                 "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
+              },
+              "opened": {
+                "description": "The ids of tabs that opened while the command ran.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               },
               "value": {
                 "description": "The result of the script as JSON."
@@ -2911,6 +2959,10 @@
                     "$ref": "#/components/schemas/CommandErrorInfo"
                   }
                 ]
+              },
+              "loading": {
+                "description": "The page was still loading when the command returned.",
+                "type": "boolean"
               },
               "ok": {
                 "type": "boolean"
@@ -3343,7 +3395,7 @@
           },
           "credentials": {
             "additionalProperties": false,
-            "description": "Configuration for session credentials",
+            "description": "Configuration for session credentials. Set enabled to false to disable credentials, including those inherited from a profile.",
             "properties": {
               "autoSubmit": {
                 "type": "boolean"
@@ -3354,6 +3406,10 @@
               "credentialProvider": {
                 "description": "Credential provider to use for runtime credential resolution. Defaults to \"steel\".",
                 "type": "string"
+              },
+              "enabled": {
+                "description": "Set to false to disable credential injection for this session.",
+                "type": "boolean"
               },
               "exactOrigin": {
                 "type": "boolean"
@@ -3770,7 +3826,8 @@
             "type": "object"
           },
           "sessionId": {
-            "description": "Optional custom UUID for the session",
+            "deprecated": true,
+            "description": "Deprecated. A session ID of your choice. Steel will reject it in a future release, because the ID that Steel generates records where the session runs. Omit it, use the `id` in the response, and put your own ID in `metadata`.",
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
             "type": "string"
@@ -7592,7 +7649,6 @@
               },
               "mode": {
                 "enum": [
-                  "none",
                   "snapshot",
                   "diff"
                 ],
@@ -7667,13 +7723,11 @@
               },
               "state": {
                 "enum": [
-                  "queued",
                   "running",
                   "completed",
                   "failed",
                   "cancelled",
-                  "timeout",
-                  "expired"
+                  "timeout"
                 ],
                 "type": "string"
               }
