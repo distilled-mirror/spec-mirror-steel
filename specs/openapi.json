@@ -5776,6 +5776,11 @@
           "retryable": {
             "description": "Whether the same request can succeed later without changes. False means fix the request or the account first.",
             "type": "boolean"
+          },
+          "unlockUrl": {
+            "description": "Where a person turns on the refused feature, e.g. verifying the account. Pass it to your user.",
+            "format": "uri",
+            "type": "string"
           }
         },
         "required": [
