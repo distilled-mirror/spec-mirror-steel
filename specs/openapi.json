@@ -3796,7 +3796,7 @@
             "type": "string"
           },
           "proxyUrl": {
-            "description": "Custom proxy URL for the browser session. Overrides useProxy, disabling Steel-provided proxies in favor of your specified proxy. Format: http(s)://username:password@hostname:port",
+            "description": "Custom proxy URL for the browser session. Overrides useProxy, disabling Steel-provided proxies in favor of your specified proxy. Format: http(s)://username:password@hostname:port or socks5://username:password@hostname:port",
             "format": "uri",
             "type": "string"
           },
@@ -4065,7 +4065,7 @@
             "type": "object"
           },
           "timeout": {
-            "description": "Session timeout duration in milliseconds. Default is 300000 (5 minutes).",
+            "description": "Session timeout duration in milliseconds. Default is 300000 (5 minutes). On Launch and Scale, a value over the plan's maximum runs at the maximum; the response's `timeout` shows the value used.",
             "maximum": 9007199254740991,
             "minimum": -9007199254740991,
             "type": "integer"
