@@ -8688,6 +8688,165 @@
         "title": "sessionCostResponse",
         "type": "object"
       },
+      "SessionCredentialIdsBody": {
+        "additionalProperties": false,
+        "properties": {
+          "bindings": {
+            "description": "At most 100 bindings; KV bindings may specify allowedOrigins.",
+            "items": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "type": "string"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "allowedOrigins": {
+                      "items": {
+                        "maxLength": 512,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "maxItems": 20,
+                      "type": "array"
+                    },
+                    "reference": {
+                      "maxLength": 2048,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "reference",
+                    "allowedOrigins"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "credentialIds": {
+            "description": "Ids of credentials (Secrets of kind `credential`) in the session's project. Binding makes the session's lookup `explicit` for good.",
+            "items": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            },
+            "maxItems": 100,
+            "type": "array"
+          }
+        },
+        "title": "sessionCredentialIdsBody",
+        "type": "object"
+      },
+      "SessionCredentialsResponse": {
+        "additionalProperties": false,
+        "description": "The credentials a session is bound to",
+        "properties": {
+          "bindings": {
+            "description": "Bindings, including KV references with their allowed origins and soft-deleted targets.",
+            "items": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "type": "string"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "allowedOrigins": {
+                      "items": {
+                        "maxLength": 512,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "maxItems": 20,
+                      "type": "array"
+                    },
+                    "reference": {
+                      "maxLength": 2048,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "reference",
+                    "allowedOrigins"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "type": "array"
+          },
+          "credentials": {
+            "description": "Live credentials bound to the session, oldest binding first. No values.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "additionalOrigins": {
+                  "description": "Other origins the credential may be filled on",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "id": {
+                  "description": "The credential's id (a Secret of kind `credential`)",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "The credential's name",
+                  "type": "string"
+                },
+                "namespace": {
+                  "description": "The credential's namespace",
+                  "type": "string"
+                },
+                "origin": {
+                  "description": "The website origin the credential is for",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "namespace",
+                "origin",
+                "additionalOrigins"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "credentialsEnabled": {
+            "description": "Whether the session was created with a `credentials` configuration. Only then can credentials be attached; otherwise attach and replace answer 409 `credentials_not_enabled`.",
+            "type": "boolean"
+          },
+          "lookup": {
+            "description": "`explicit`: the session fills only the credentials listed here. `implicit`: it fills credentials stored for its namespace and the page origin.",
+            "enum": [
+              "implicit",
+              "explicit"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "credentialsEnabled",
+          "bindings",
+          "lookup",
+          "credentials"
+        ],
+        "title": "sessionCredentialsResponse",
+        "type": "object",
+        "x-steel-sdk": {
+          "model": "sessions.session_credentials"
+        }
+      },
       "SessionLiveDetailsResponse": {
         "additionalProperties": false,
         "properties": {
@@ -9577,6 +9736,176 @@
           }
         },
         "title": "uploadExtensionRequest",
+        "type": "object"
+      },
+      "Vault": {
+        "additionalProperties": false,
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 1024,
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          },
+          "name": {
+            "description": "1–63 lowercase letters, digits, hyphens, underscores or dots; must start with a letter or digit.",
+            "maxLength": 63,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$",
+            "type": "string"
+          },
+          "projectId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "projectId",
+          "name",
+          "description",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "vault",
+        "type": "object",
+        "x-steel-sdk": {
+          "model": "vaults.vault"
+        }
+      },
+      "VaultCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "maxLength": 1024,
+            "nullable": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "1–63 lowercase letters, digits, hyphens, underscores or dots; must start with a letter or digit.",
+            "maxLength": 63,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$",
+            "type": "string"
+          },
+          "projectId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "vaultCreate",
+        "type": "object"
+      },
+      "VaultList": {
+        "additionalProperties": false,
+        "properties": {
+          "vaults": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "createdAt": {
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                  "type": "string"
+                },
+                "description": {
+                  "maxLength": 1024,
+                  "nullable": true,
+                  "type": "string"
+                },
+                "id": {
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "1–63 lowercase letters, digits, hyphens, underscores or dots; must start with a letter or digit.",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$",
+                  "type": "string"
+                },
+                "projectId": {
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "projectId",
+                "name",
+                "description",
+                "createdAt",
+                "updatedAt"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "vaults"
+        ],
+        "title": "vaultList",
+        "type": "object",
+        "x-steel-sdk": {
+          "model": "vaults.vault_list"
+        }
+      },
+      "VaultUpdate": {
+        "additionalProperties": false,
+        "anyOf": [
+          {
+            "required": [
+              "name"
+            ]
+          },
+          {
+            "required": [
+              "description"
+            ]
+          }
+        ],
+        "properties": {
+          "description": {
+            "maxLength": 1024,
+            "nullable": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "1–63 lowercase letters, digits, hyphens, underscores or dots; must start with a letter or digit.",
+            "maxLength": 63,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$",
+            "type": "string"
+          }
+        },
+        "title": "vaultUpdate",
         "type": "object"
       }
     },
@@ -11283,6 +11612,3032 @@
         }
       }
     },
+    "/v1/secret-connections": {
+      "get": {
+        "operationId": "list_secret_connections",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "connections": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "createdAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "enabled": {
+                            "type": "boolean"
+                          },
+                          "id": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "name": {
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "provider": {
+                            "enum": [
+                              "1password",
+                              "hashicorp_vault"
+                            ],
+                            "type": "string"
+                          },
+                          "tokenBudget": {
+                            "additionalProperties": false,
+                            "nullable": true,
+                            "properties": {
+                              "burst": {
+                                "maximum": 10000,
+                                "minimum": 2,
+                                "type": "integer"
+                              },
+                              "refillPerSecond": {
+                                "description": "Tokens per second, with at most three decimal places.",
+                                "maximum": 1000,
+                                "minimum": 0.001,
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "burst",
+                              "refillPerSecond"
+                            ],
+                            "type": "object"
+                          },
+                          "updatedAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "vaultFingerprint": {
+                            "description": "For 1Password, a SHA-256 diagnostic fingerprint of sorted accessible vault IDs. For HashiCorp Vault, a SHA-256 fingerprint of the normalized endpoint and namespace. Neither proves immutable account or server identity.",
+                            "type": "string"
+                          },
+                          "version": {
+                            "minimum": 1,
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "provider",
+                          "version",
+                          "enabled",
+                          "tokenBudget",
+                          "vaultFingerprint",
+                          "createdAt",
+                          "updatedAt"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "connections"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "summary": "List secret connections",
+        "tags": [
+          "Secret Connections"
+        ],
+        "x-steel-sdk": {
+          "method": "secret_connections.list"
+        }
+      },
+      "post": {
+        "operationId": "create_secret_connection",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "auth": {
+                    "additionalProperties": false,
+                    "description": "Write-only provider authentication. Supply a service account token for 1Password, a token for HashiCorp token auth, or a role ID and secret ID for HashiCorp AppRole.",
+                    "properties": {
+                      "mount": {
+                        "maxLength": 512,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "roleId": {
+                        "description": "Write-only; never returned by the API.",
+                        "maxLength": 4096,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "secretId": {
+                        "description": "Write-only; never returned by the API.",
+                        "maxLength": 4096,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "serviceAccountToken": {
+                        "description": "Write-only; never returned by the API.",
+                        "maxLength": 4096,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "token": {
+                        "description": "Write-only; never returned by the API.",
+                        "maxLength": 4096,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "type": {
+                        "enum": [
+                          "token",
+                          "approle"
+                        ],
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "config": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "address": {
+                        "maxLength": 2048,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "caPem": {
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "namespace": {
+                        "maxLength": 512,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "address"
+                    ],
+                    "type": "object"
+                  },
+                  "name": {
+                    "maxLength": 256,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "projectId": {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  "provider": {
+                    "enum": [
+                      "1password",
+                      "hashicorp_vault"
+                    ],
+                    "type": "string"
+                  },
+                  "tokenBudget": {
+                    "additionalProperties": false,
+                    "nullable": true,
+                    "properties": {
+                      "burst": {
+                        "maximum": 10000,
+                        "minimum": 2,
+                        "type": "integer"
+                      },
+                      "refillPerSecond": {
+                        "description": "Tokens per second, with at most three decimal places.",
+                        "maximum": 1000,
+                        "minimum": 0.001,
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "burst",
+                      "refillPerSecond"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "name",
+                  "provider",
+                  "auth"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "name": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "provider": {
+                      "enum": [
+                        "1password",
+                        "hashicorp_vault"
+                      ],
+                      "type": "string"
+                    },
+                    "tokenBudget": {
+                      "additionalProperties": false,
+                      "nullable": true,
+                      "properties": {
+                        "burst": {
+                          "maximum": 10000,
+                          "minimum": 2,
+                          "type": "integer"
+                        },
+                        "refillPerSecond": {
+                          "description": "Tokens per second, with at most three decimal places.",
+                          "maximum": 1000,
+                          "minimum": 0.001,
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "burst",
+                        "refillPerSecond"
+                      ],
+                      "type": "object"
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "vaultFingerprint": {
+                      "description": "For 1Password, a SHA-256 diagnostic fingerprint of sorted accessible vault IDs. For HashiCorp Vault, a SHA-256 fingerprint of the normalized endpoint and namespace. Neither proves immutable account or server identity.",
+                      "type": "string"
+                    },
+                    "version": {
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "provider",
+                    "version",
+                    "enabled",
+                    "tokenBudget",
+                    "vaultFingerprint",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "summary": "Create a secret connection",
+        "tags": [
+          "Secret Connections"
+        ],
+        "x-steel-sdk": {
+          "method": "secret_connections.create"
+        }
+      }
+    },
+    "/v1/secret-connections/{id}": {
+      "delete": {
+        "operationId": "delete_secret_connection",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Default Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "summary": "Delete a secret connection",
+        "tags": [
+          "Secret Connections"
+        ],
+        "x-steel-sdk": {
+          "method": "secret_connections.delete"
+        }
+      },
+      "get": {
+        "operationId": "get_secret_connection",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "name": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "provider": {
+                      "enum": [
+                        "1password",
+                        "hashicorp_vault"
+                      ],
+                      "type": "string"
+                    },
+                    "tokenBudget": {
+                      "additionalProperties": false,
+                      "nullable": true,
+                      "properties": {
+                        "burst": {
+                          "maximum": 10000,
+                          "minimum": 2,
+                          "type": "integer"
+                        },
+                        "refillPerSecond": {
+                          "description": "Tokens per second, with at most three decimal places.",
+                          "maximum": 1000,
+                          "minimum": 0.001,
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "burst",
+                        "refillPerSecond"
+                      ],
+                      "type": "object"
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "vaultFingerprint": {
+                      "description": "For 1Password, a SHA-256 diagnostic fingerprint of sorted accessible vault IDs. For HashiCorp Vault, a SHA-256 fingerprint of the normalized endpoint and namespace. Neither proves immutable account or server identity.",
+                      "type": "string"
+                    },
+                    "version": {
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "provider",
+                    "version",
+                    "enabled",
+                    "tokenBudget",
+                    "vaultFingerprint",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "summary": "Get a secret connection",
+        "tags": [
+          "Secret Connections"
+        ],
+        "x-steel-sdk": {
+          "method": "secret_connections.retrieve"
+        }
+      },
+      "patch": {
+        "operationId": "update_secret_connection",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "anyOf": [
+                  {
+                    "required": [
+                      "auth"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "config"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "enabled"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "name"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "tokenBudget"
+                    ]
+                  }
+                ],
+                "properties": {
+                  "auth": {
+                    "additionalProperties": false,
+                    "description": "Write-only provider authentication. Supply a service account token for 1Password, a token for HashiCorp token auth, or a role ID and secret ID for HashiCorp AppRole.",
+                    "properties": {
+                      "mount": {
+                        "maxLength": 512,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "roleId": {
+                        "description": "Write-only; never returned by the API.",
+                        "maxLength": 4096,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "secretId": {
+                        "description": "Write-only; never returned by the API.",
+                        "maxLength": 4096,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "serviceAccountToken": {
+                        "description": "Write-only; never returned by the API.",
+                        "maxLength": 4096,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "token": {
+                        "description": "Write-only; never returned by the API.",
+                        "maxLength": 4096,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "type": {
+                        "enum": [
+                          "token",
+                          "approle"
+                        ],
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "config": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "address": {
+                        "maxLength": 2048,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "caPem": {
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "namespace": {
+                        "maxLength": 512,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "address"
+                    ],
+                    "type": "object"
+                  },
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "name": {
+                    "maxLength": 256,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "tokenBudget": {
+                    "additionalProperties": false,
+                    "nullable": true,
+                    "properties": {
+                      "burst": {
+                        "maximum": 10000,
+                        "minimum": 2,
+                        "type": "integer"
+                      },
+                      "refillPerSecond": {
+                        "description": "Tokens per second, with at most three decimal places.",
+                        "maximum": 1000,
+                        "minimum": 0.001,
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "burst",
+                      "refillPerSecond"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "name": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "provider": {
+                      "enum": [
+                        "1password",
+                        "hashicorp_vault"
+                      ],
+                      "type": "string"
+                    },
+                    "tokenBudget": {
+                      "additionalProperties": false,
+                      "nullable": true,
+                      "properties": {
+                        "burst": {
+                          "maximum": 10000,
+                          "minimum": 2,
+                          "type": "integer"
+                        },
+                        "refillPerSecond": {
+                          "description": "Tokens per second, with at most three decimal places.",
+                          "maximum": 1000,
+                          "minimum": 0.001,
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "burst",
+                        "refillPerSecond"
+                      ],
+                      "type": "object"
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "vaultFingerprint": {
+                      "description": "For 1Password, a SHA-256 diagnostic fingerprint of sorted accessible vault IDs. For HashiCorp Vault, a SHA-256 fingerprint of the normalized endpoint and namespace. Neither proves immutable account or server identity.",
+                      "type": "string"
+                    },
+                    "version": {
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "provider",
+                    "version",
+                    "enabled",
+                    "tokenBudget",
+                    "vaultFingerprint",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "summary": "Update a secret connection",
+        "tags": [
+          "Secret Connections"
+        ],
+        "x-steel-sdk": {
+          "method": "secret_connections.update"
+        }
+      }
+    },
+    "/v1/secret-connections/{id}/test": {
+      "post": {
+        "operationId": "test_secret_connection",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Default Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "context": {
+                      "items": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "details": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "linkToDocs": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "param": {
+                      "type": "string"
+                    },
+                    "retryAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "retryable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        },
+        "summary": "Test a secret connection",
+        "tags": [
+          "Secret Connections"
+        ],
+        "x-steel-sdk": {
+          "method": "secret_connections.test"
+        }
+      }
+    },
     "/v1/sessions": {
       "get": {
         "description": "Fetches all active sessions for the current organization.",
@@ -12168,6 +15523,479 @@
         ],
         "x-steel-sdk": {
           "method": "sessions.cost"
+        }
+      }
+    },
+    "/v1/sessions/{id}/credentials": {
+      "get": {
+        "description": "The session's credential lookup and the live credentials bound to it (no values). Subject to session organization and project access.",
+        "operationId": "listSessionCredentials",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionCredentialsResponse"
+                }
+              }
+            },
+            "description": "The credentials a session is bound to"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          }
+        },
+        "summary": "List session credentials",
+        "tags": [
+          "Sessions"
+        ],
+        "x-steel-sdk": {
+          "method": "sessions.credentials.list"
+        }
+      },
+      "post": {
+        "description": "Attach credentialIds and/or Vault or item references in bindings. Each array accepts at most 100 entries; at most 100 distinct direct items and whole Vaults may be bound. Only credentials can be autofilled. Lookup becomes explicit and remains so. Errors: 400 `invalid_reference`, `reference_not_found`, `reference_ambiguous`, `reference_not_supported`, `credential_not_bindable`, or `too_many_credentials`; 409 `credentials_not_enabled` or `session_not_running`; 503 `credential_bindings_busy` (retryable).",
+        "operationId": "attachSessionCredentials",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionCredentialIdsBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionCredentialsResponse"
+                }
+              }
+            },
+            "description": "The credentials a session is bound to"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          }
+        },
+        "summary": "Attach session credentials",
+        "tags": [
+          "Sessions"
+        ],
+        "x-steel-sdk": {
+          "method": "sessions.credentials.attach"
+        }
+      },
+      "put": {
+        "description": "Replace all direct item and Vault bindings, including provider references steel://connections/<connection>/vaults/<vault>[/<item>]. Supply credentialIds and/or bindings; empty arrays detach all. At most 100 distinct bindings may be stored. Only credentials can be autofilled. Lookup becomes explicit and remains so.",
+        "operationId": "replaceSessionCredentials",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionCredentialIdsBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionCredentialsResponse"
+                }
+              }
+            },
+            "description": "The credentials a session is bound to"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          }
+        },
+        "summary": "Replace session credentials",
+        "tags": [
+          "Sessions"
+        ],
+        "x-steel-sdk": {
+          "method": "sessions.credentials.replace"
+        }
+      }
+    },
+    "/v1/sessions/{id}/credentials/bindings": {
+      "delete": {
+        "description": "Pass reference as a query parameter to detach one Vault or item binding, including steel://connections/<connection>/vaults/<vault>[/<item>]. Does not detach items covered by a whole Vault binding. Errors: 400 `invalid_reference` or `reference_ambiguous`; 404 `credential_not_attached`; 409 `session_not_running`; 503 `credential_bindings_busy` (retryable).",
+        "operationId": "detachSessionVaultBinding",
+        "parameters": [
+          {
+            "description": "Vault or item reference to detach",
+            "in": "query",
+            "name": "reference",
+            "required": true,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionCredentialsResponse"
+                }
+              }
+            },
+            "description": "The credentials a session is bound to"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          }
+        },
+        "summary": "Detach a session Vault binding",
+        "tags": [
+          "Sessions"
+        ],
+        "x-steel-sdk": {
+          "method": "sessions.credentials.detach_binding"
+        }
+      }
+    },
+    "/v1/sessions/{id}/credentials/{credentialId}": {
+      "delete": {
+        "description": "Unbind a credential from a running session. The lookup stays `explicit`: with nothing bound, the session fills nothing. Errors: 404 `credential_not_attached`, 409 `session_not_running`, 503 `credential_bindings_busy` (retryable).",
+        "operationId": "detachSessionCredential",
+        "parameters": [
+          {
+            "description": "The session id",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          },
+          {
+            "description": "The credential id to detach",
+            "in": "path",
+            "name": "credentialId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionCredentialsResponse"
+                }
+              }
+            },
+            "description": "The credentials a session is bound to"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          }
+        },
+        "summary": "Detach a session credential",
+        "tags": [
+          "Sessions"
+        ],
+        "x-steel-sdk": {
+          "method": "sessions.credentials.detach"
         }
       }
     },
@@ -13915,6 +17743,352 @@
           "method": "sessions.files.download"
         }
       }
+    },
+    "/v1/vaults": {
+      "get": {
+        "operationId": "list_vaults",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VaultList"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          }
+        },
+        "summary": "List Vaults",
+        "tags": [
+          "Vaults"
+        ],
+        "x-steel-sdk": {
+          "method": "vaults.list"
+        }
+      },
+      "post": {
+        "operationId": "create_vault",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VaultCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vault"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          }
+        },
+        "summary": "Create a Vault",
+        "tags": [
+          "Vaults"
+        ],
+        "x-steel-sdk": {
+          "method": "vaults.create"
+        }
+      }
+    },
+    "/v1/vaults/{id}": {
+      "delete": {
+        "description": "Soft-delete a Vault. Returns 409 while it contains any live Secrets or credentials; move or delete them first.",
+        "operationId": "delete_vault",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Vault deleted"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          }
+        },
+        "summary": "Delete an empty Vault",
+        "tags": [
+          "Vaults"
+        ],
+        "x-steel-sdk": {
+          "method": "vaults.delete"
+        }
+      },
+      "get": {
+        "operationId": "get_vault",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vault"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          }
+        },
+        "summary": "Get a Vault",
+        "tags": [
+          "Vaults"
+        ],
+        "x-steel-sdk": {
+          "method": "vaults.retrieve"
+        }
+      },
+      "patch": {
+        "operationId": "update_vault",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VaultUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vault"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          }
+        },
+        "summary": "Update a Vault",
+        "tags": [
+          "Vaults"
+        ],
+        "x-steel-sdk": {
+          "method": "vaults.update"
+        }
+      }
     }
   },
   "security": [
@@ -13953,6 +18127,12 @@
     },
     {
       "name": "Captchas"
+    },
+    {
+      "name": "Vaults"
+    },
+    {
+      "name": "Secret Connections"
     },
     {
       "name": "Projects"
