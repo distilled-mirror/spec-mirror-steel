@@ -1142,6 +1142,7 @@
                 "type": "string"
               },
               "script": {
+                "description": "An expression, or an async function body that gives its value with return. A promise result is awaited.",
                 "minLength": 1,
                 "type": "string"
               },
@@ -6212,6 +6213,7 @@
                   },
                   "battery": {
                     "additionalProperties": {},
+                    "nullable": true,
                     "properties": {
                       "charging": {
                         "nullable": true,
@@ -6570,8 +6572,7 @@
                                 "required": [
                                   "type",
                                   "suffixes",
-                                  "description",
-                                  "enabledPlugin"
+                                  "description"
                                 ],
                                 "type": "object"
                               },
@@ -6996,6 +6997,7 @@
                         },
                         "battery": {
                           "additionalProperties": {},
+                          "nullable": true,
                           "properties": {
                             "charging": {
                               "nullable": true,
@@ -7354,8 +7356,7 @@
                                       "required": [
                                         "type",
                                         "suffixes",
-                                        "description",
-                                        "enabledPlugin"
+                                        "description"
                                       ],
                                       "type": "object"
                                     },
